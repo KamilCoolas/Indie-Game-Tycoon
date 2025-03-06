@@ -6,30 +6,58 @@ using TMPro;
 
 public class NewGameValuation : MonoBehaviour
 {
-    public TMP_Text genreDropdown;
     public TMP_Text themeDropdown;
     public TMP_Text graphicsDropdown;
     public TMP_Text estDur;
     public TMP_Text estCost;
+    public TMP_Dropdown genreDropdown;
     int genreValue;
     int themeValue;
     int graphicValue;
     public static int estDurValue;
     public static int estCostValue;
+    string[] genreList =
+        {
+              "Arcade",
+              "Endless Runner",
+              "Platformer",
+              "RPG"
+        };
+    Dictionary<string, int> genre = new Dictionary<string, int>();
+
+    // Adding elements
+
+    private void Start()
+    {
+        genre.Add("Arcade", 1);
+        genre.Add("Endless Runner", 1);
+        genre.Add("Platformer", 2);
+        genre.Add("RPG", 4);
+        foreach (string t in genreList)
+        {
+            genreDropdown.options.Add(new TMP_Dropdown.OptionData() { text = t });
+        }
+        genreDropdown.onValueChanged.AddListener(delegate { DropdownValueChanged(genreDropdown); });
+    }
+    void DropdownValueChanged(TMP_Dropdown change)
+    {
+        genreValue = genre[change.captionText.text];
+    }
     void Update()
     {
-        switch (genreDropdown.text)
-        {
-            case "Arcade":
-                genreValue = 1;
-                break;
-            case "Endless Runner":
-                genreValue = 1;
-                break;
-            case "Platformer":
-                genreValue = 2;
-                break;
-        }
+        
+        //switch (genreDropdown.captionText.text)
+        //{
+        //    case "Arcade":
+        //        genreValue = 1;
+        //        break;
+        //    case "Endless Runner":
+        //        genreValue = 1;
+        //        break;
+        //    case "Platformer":
+        //        genreValue = 2;
+        //        break;
+        //}
         switch (themeDropdown.text)
         {
             case "Space":
