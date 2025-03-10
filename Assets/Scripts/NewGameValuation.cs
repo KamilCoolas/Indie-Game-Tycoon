@@ -3,9 +3,15 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using System.IO;
+using Unity.VisualScripting.FullSerializer;
+using System.Text.RegularExpressions;
+using UnityEditor.Experimental.GraphView;
+using System;
 
 public class NewGameValuation : MonoBehaviour
 {
+    public TextAsset genreList;
     public TMP_Text themeDropdown;
     public TMP_Text graphicsDropdown;
     public TMP_Text estDur;
@@ -16,26 +22,26 @@ public class NewGameValuation : MonoBehaviour
     int graphicValue;
     public static int estDurValue;
     public static int estCostValue;
-    string[] genreList =
-        {
-              "Arcade",
-              "Endless Runner",
-              "Platformer",
-              "RPG"
-        };
-    Dictionary<string, int> genre = new Dictionary<string, int>();
+    string[,] genreListArray;
+    //    {
+    //          "Arcade",
+    //          "Endless Runner",
+    //          "Platformer",
+    //          "RPG"
+    //    };
+    Dictionary<string, int> genre = new();
+
 
     // Adding elements
 
     private void Start()
     {
-        genre.Add("Arcade", 1);
-        genre.Add("Endless Runner", 1);
-        genre.Add("Platformer", 2);
-        genre.Add("RPG", 4);
-        foreach (string t in genreList)
+        genreListArray = ParseTextAsset(genreList);
+        //foreach (string t in genreListArray)
+        for (int i = 0; i < genreListArray.GetLength(0); i++)
         {
-            genreDropdown.options.Add(new TMP_Dropdown.OptionData() { text = t });
+            genreDropdown.options.Add(new TMP_Dropdown.OptionData() { text = genreListArray[i,0] });
+            genre.Add(genreListArray[i, 0], Convert.ToInt32(genreListArray[i, 1]));
         }
         genreDropdown.onValueChanged.AddListener(delegate { DropdownValueChanged(genreDropdown); });
     }
@@ -86,5 +92,33 @@ public class NewGameValuation : MonoBehaviour
         estCostValue = (100 * genreValue + 100 * themeValue + 100 * graphicValue)*estDurValue;
         estDur.text = "Estimated Duration: " + estDurValue + " turn(s)";
         estCost.text = "Estimated Cost: " + estCostValue + "$";
+    }
+    public string[,] ParseTextAsset(TextAsset ft)
+    {
+        string fs = ft.text;
+        string[] fLines = Regex.Split(fs, "\r\n");
+        List<string> lines = new List<string>();
+        foreach (string t in fLines)
+        {
+            if (t != "")
+            {
+                lines.Add(t);
+            }
+        }
+        string[,] values = new string[lines.Count, 2];
+        int k = 0;
+        for (int i = 0; i < lines.Count; i++)
+        {
+                string valueLine = lines[i];
+                string[] splitet = Regex.Split(valueLine, ","); // your splitter here
+                int j = 0;
+                foreach (string t in splitet)
+                {
+                    values[k,j] = t;
+                    j++;
+                }
+                k++;
+            }
+        return values;
     }
 }
