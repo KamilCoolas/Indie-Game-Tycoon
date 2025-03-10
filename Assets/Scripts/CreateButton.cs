@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using Assets.Scripts;
 
 public class CreateButton : MonoBehaviour
 {
@@ -19,9 +20,10 @@ public class CreateButton : MonoBehaviour
     }
     public void OnClick()
     {
-        GameLogic.gameInProgress = new string[] { title.text, genreDropdown.text, themeDropdown.text, graphicsDropdown.text, NewGameValuation.estDurValue.ToString(), NewGameValuation.estCostValue.ToString() };
+        GameLogic.gameInProgress = new string[] { title.text, genreDropdown.text, themeDropdown.text, graphicsDropdown.text, NewGameValuation.estCostValue.ToString(), NewGameValuation.estDurValue.ToString() };
         GameLogic.money -= NewGameValuation.estCostValue;
         GameLogic.isGameInProgress = true;
         CreateCanvas.enabled = false;
+        UpdateMoneyTurn.UpdateMoneyTurnText();
     }
 }

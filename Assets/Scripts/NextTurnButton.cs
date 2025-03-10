@@ -1,12 +1,18 @@
+using Assets.Scripts;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+
 
 public class NextTurnButton : MonoBehaviour
 {
     public Button NextTurnBtn;
+    public TMP_Dropdown GameDrop;
+    public TMP_Text moneyText;
+    public TMP_Text turnText;
     void Start()
     {
         Button btn = NextTurnBtn.GetComponent<Button>();
@@ -15,15 +21,28 @@ public class NextTurnButton : MonoBehaviour
     public void OnClick()
     {
         GameLogic.turn++;
+        UpdateMoneyTurn.UpdateMoneyTurnText();
         if (GameLogic.isGameInProgress)
         {
-            GameLogic.gameInProgress[4] = (Convert.ToInt32(GameLogic.gameInProgress[4]) - 1).ToString();
-            int genreValue = GameLogic.GameInProgressGenre();
-            int themeValue = GameLogic.GameInProgressTheme();
-            int graphicValue = GameLogic.GameInProgressGraphic();
-            ExpGain(genreValue);
-            ExpGain(themeValue);
-            ExpGain(graphicValue);
+            GameLogic.gameInProgress[5] = (Convert.ToInt32(GameLogic.gameInProgress[5]) - 1).ToString();
+            for (int i = 1; i <= 3; i++)
+            {
+                ExpGain(GameLogic.atributeId[GameLogic.gameInProgress[i]]);
+            }
+        }
+        if (Convert.ToInt32(GameLogic.gameInProgress[5]) <= 0 && GameLogic.isGameInProgress)
+        {
+            for (int i = 0; i < 6; i++)
+            {
+                if (i == 0) GameLogic.gamesReleased[GameLogic.numberOfGamesIndex, i] = (GameLogic.numberOfGamesIndex + 1).ToString();
+                else GameLogic.gamesReleased[GameLogic.numberOfGamesIndex, i] = GameLogic.gameInProgress[i - 1];
+            }
+            GameQualityAndReview.GameQuality();
+            GameDrop.options.Add(new TMP_Dropdown.OptionData() { text = GameLogic.gamesReleased[GameLogic.numberOfGamesIndex, 0] + "." + GameLogic.gamesReleased[GameLogic.numberOfGamesIndex, 1] });
+            GameLogic.numberOfGamesIndex += 1;
+            GameLogic.gameInProgress = new string[] { };
+            GameLogic.isGameReleased = true;
+            GameLogic.isGameInProgress = false;
         }
     }
     public void ExpGain (int atributeValue)

@@ -6,7 +6,6 @@ using TMPro;
 
 public class CreateNewGameButton : MonoBehaviour
 {
-    public int cost = 10;
     public Button CreateNewButton;
     public Canvas CreateCanvas;
     public TMP_InputField Title;

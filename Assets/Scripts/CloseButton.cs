@@ -6,7 +6,7 @@ using UnityEngine.UI;
 public class CloseButton : MonoBehaviour
 {
     public Button CloseBtn;
-    public Canvas CreateCanvas;
+    public Canvas CanvasToClose;
     void Start()
     {
         Button btn = CloseBtn.GetComponent<Button>();
@@ -14,6 +14,6 @@ public class CloseButton : MonoBehaviour
     }
     public void OnClick()
     {
-        CreateCanvas.enabled = false;
+        CanvasToClose.enabled = false;
     }
 }

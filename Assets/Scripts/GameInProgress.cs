@@ -20,7 +20,7 @@ public class GameInProgress : MonoBehaviour
             title.text = GameLogic.gameInProgress[0];
             genre.text = GameLogic.gameInProgress[1];
             theme.text = GameLogic.gameInProgress[2];
-            turnLeft.text = "Turn Left: " + GameLogic.gameInProgress[4];
+            turnLeft.text = "Turn Left: " + GameLogic.gameInProgress[5];
         }
         else gameInPro.enabled = false;
     }

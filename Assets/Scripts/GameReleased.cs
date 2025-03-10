@@ -23,6 +23,7 @@ public class GameReleased : MonoBehaviour
             Rev3.text = "Review 3: " + GameLogic.gamesReleased[GameLogic.numberOfGamesIndex - 1, 8] + "/10";
             Rev4.text = "Review 4: " + GameLogic.gamesReleased[GameLogic.numberOfGamesIndex - 1, 9] + "/10";
             Avg.text = "Avarage Score: " + GameLogic.gamesReleased[GameLogic.numberOfGamesIndex - 1, 10] + "/10";
+            GameLogic.isGameReleased = false;
         }
     }
 }
