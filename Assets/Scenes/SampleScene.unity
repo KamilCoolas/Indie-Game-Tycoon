@@ -1528,11 +1528,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1bd22669415e8524eb39a156759701d2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  themeDropdown: {fileID: 1697650032}
-  graphicsDropdown: {fileID: 956319991}
+  genreList: {fileID: 4900000, guid: 0941d7aaf976d5945a78d46a1dfe3796, type: 3}
+  genreDropdown: {fileID: 787752138}
+  themeList: {fileID: 4900000, guid: 9b632d21ecb2053449fb6c1b2a6ffcc1, type: 3}
+  themeDropdown: {fileID: 1030882321}
+  graphicList: {fileID: 4900000, guid: efb3ea7d3250ee54b8f88ebcfcbddf66, type: 3}
+  graphicDropdown: {fileID: 1215466922}
   estDur: {fileID: 1123269627}
   estCost: {fileID: 1750277978}
-  genreDropdown: {fileID: 787752138}
+  CreateButton: {fileID: 987289198}
+  TitleInput: {fileID: 1792914680}
 --- !u!1 &213666367
 GameObject:
   m_ObjectHideFlags: 0
@@ -6342,7 +6347,7 @@ MonoBehaviour:
   m_Placeholder: {fileID: 0}
   m_ItemText: {fileID: 1868527784}
   m_ItemImage: {fileID: 0}
-  m_Value: 0
+  m_Value: -1
   m_Options:
     m_Options: []
   m_OnValueChanged:
@@ -7820,7 +7825,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 2D
+  m_text: 
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -8278,7 +8283,7 @@ MonoBehaviour:
     m_PressedTrigger: Pressed
     m_SelectedTrigger: Selected
     m_DisabledTrigger: Disabled
-  m_Interactable: 1
+  m_Interactable: 0
   m_TargetGraphic: {fileID: 987289199}
   m_OnClick:
     m_PersistentCalls:
@@ -8554,15 +8559,9 @@ MonoBehaviour:
   m_Placeholder: {fileID: 0}
   m_ItemText: {fileID: 870278536}
   m_ItemImage: {fileID: 0}
-  m_Value: 0
+  m_Value: -1
   m_Options:
-    m_Options:
-    - m_Text: Space
-      m_Image: {fileID: 0}
-    - m_Text: Pirates
-      m_Image: {fileID: 0}
-    - m_Text: Fantasy
-      m_Image: {fileID: 0}
+    m_Options: []
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls: []
@@ -9891,15 +9890,9 @@ MonoBehaviour:
   m_Placeholder: {fileID: 0}
   m_ItemText: {fileID: 952767446}
   m_ItemImage: {fileID: 0}
-  m_Value: 0
+  m_Value: -1
   m_Options:
-    m_Options:
-    - m_Text: 2D
-      m_Image: {fileID: 0}
-    - m_Text: 2.5D
-      m_Image: {fileID: 0}
-    - m_Text: 3D
-      m_Image: {fileID: 0}
+    m_Options: []
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls: []
@@ -13208,7 +13201,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Space
+  m_text: 
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
