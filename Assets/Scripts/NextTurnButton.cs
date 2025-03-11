@@ -21,7 +21,9 @@ public class NextTurnButton : MonoBehaviour
     public void OnClick()
     {
         GameLogic.turn++;
+        GameLogic.money -= GameLogic.costPerTurn;
         UpdateMoneyTurn.UpdateMoneyTurnText();
+        if (GameLogic.gamesReleased[0,0] != null) GameLogic.SalesCalculation(GameLogic.gamesReleased);
         if (GameLogic.isGameInProgress)
         {
             GameLogic.gameInProgress[5] = (Convert.ToInt32(GameLogic.gameInProgress[5]) - 1).ToString();
@@ -30,7 +32,7 @@ public class NextTurnButton : MonoBehaviour
                 ExpGain(GameLogic.atributeId[GameLogic.gameInProgress[i]]);
             }
         }
-        if (Convert.ToInt32(GameLogic.gameInProgress[5]) <= 0 && GameLogic.isGameInProgress)
+        if (GameLogic.isGameInProgress && Convert.ToInt32(GameLogic.gameInProgress[5]) <= 0)
         {
             for (int i = 0; i < 6; i++)
             {

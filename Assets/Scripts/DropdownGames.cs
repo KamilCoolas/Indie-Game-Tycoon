@@ -13,6 +13,10 @@ public class DropdownGames : MonoBehaviour
     public TMP_Text Graphics;
     public TMP_Text ReleasedTurn;
     public TMP_Text AvgScore;
+    public TMP_Text SoldThisWeek;
+    public TMP_Text IncomeThisWeek;
+    public TMP_Text SoldOverall;
+    public TMP_Text IncomeOverall;
     void Update()
     {
         if (dropdownText.text != "-")
@@ -25,6 +29,10 @@ public class DropdownGames : MonoBehaviour
             Graphics.text = "Graphics: " + GameLogic.gamesReleased[GameId, 4];
             ReleasedTurn.text = "Released Turn: " + GameLogic.gamesReleased[GameId, 11];
             AvgScore.text = "Avg. Score: " + GameLogic.gamesReleased[GameId, 10];
+            SoldThisWeek.text = "Sold This Week: " + GameLogic.gamesReleased[GameId, 12]; ;
+            IncomeThisWeek.text = "Income This Week: " + GameLogic.gamesReleased[GameId, 13]; ;
+            SoldOverall.text = "Sold Overall: " + GameLogic.gamesReleased[GameId, 14]; ;
+            IncomeOverall.text = "Income Overall: " + GameLogic.gamesReleased[GameId, 15]; ;
         }
         else
         {
@@ -34,6 +42,10 @@ public class DropdownGames : MonoBehaviour
             Graphics.text = "Graphics: -";
             ReleasedTurn.text = "Released Turn: -";
             AvgScore.text = "Avg. Score: -";
+            SoldThisWeek.text = "Sold This Week: -";
+            IncomeThisWeek.text = "Income This Week: -";
+            SoldOverall.text = "Sold Overall: -";
+            IncomeOverall.text = "Income Overall: -";
         }
     }
 }

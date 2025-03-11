@@ -1472,7 +1472,7 @@ Canvas:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 206050346}
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 3
   m_RenderMode: 1
   m_Camera: {fileID: 519420031}
@@ -2007,7 +2007,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   CloseBtn: {fileID: 245378814}
-  CreateCanvas: {fileID: 206050349}
+  CanvasToClose: {fileID: 206050349}
 --- !u!114 &245378814
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2341,7 +2341,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   CloseBtn: {fileID: 305876361}
-  CreateCanvas: {fileID: 862477003}
+  CanvasToClose: {fileID: 862477003}
 --- !u!114 &305876361
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3292,7 +3292,7 @@ Canvas:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 368088174}
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 3
   m_RenderMode: 1
   m_Camera: {fileID: 519420031}
@@ -4048,7 +4048,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Sold This Week
+  m_text: Sold Overall
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -4926,9 +4926,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0ada7023eb7cb1649a09e005d42e67ad, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  moneyText: {fileID: 1173556015}
-  turnText: {fileID: 1532324858}
-  GameDrop: {fileID: 1949418997}
   EmpDrop: {fileID: 186870246}
 --- !u!4 &610855016
 Transform:
@@ -7310,7 +7307,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f40b671d31a225343a4798992efe2e5a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cost: 10
   CreateNewButton: {fileID: 900749777}
   CreateCanvas: {fileID: 206050349}
   Title: {fileID: 1792914680}
@@ -10315,6 +10311,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   NextTurnBtn: {fileID: 1301194623}
+  GameDrop: {fileID: 1949418997}
+  moneyText: {fileID: 1173556015}
+  turnText: {fileID: 1532324858}
 --- !u!1 &1313597049
 GameObject:
   m_ObjectHideFlags: 0
@@ -10368,7 +10367,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   CloseBtn: {fileID: 1313597052}
-  CreateCanvas: {fileID: 75229865}
+  CanvasToClose: {fileID: 75229865}
 --- !u!114 &1313597052
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -14895,6 +14894,10 @@ MonoBehaviour:
   Graphics: {fileID: 1937417729}
   ReleasedTurn: {fileID: 32906787}
   AvgScore: {fileID: 1591194595}
+  SoldThisWeek: {fileID: 1993717636}
+  IncomeThisWeek: {fileID: 2000949085}
+  SoldOverall: {fileID: 506413650}
+  IncomeOverall: {fileID: 1961671783}
 --- !u!114 &1949418997
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -15255,7 +15258,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Income This Week
+  m_text: Income Overall
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -15855,7 +15858,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1995143738}
   - component: {fileID: 1995143742}
-  - component: {fileID: 1995143741}
+  - component: {fileID: 1995143743}
   - component: {fileID: 1995143740}
   - component: {fileID: 1995143739}
   m_Layer: 5
@@ -15959,20 +15962,6 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
---- !u!114 &1995143741
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1995143737}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 03602280f67183343a29efaf65c442ab, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  CloseBtn: {fileID: 1995143739}
-  GameRelCanvas: {fileID: 1407284062}
 --- !u!222 &1995143742
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -15981,6 +15970,20 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1995143737}
   m_CullTransparentMesh: 1
+--- !u!114 &1995143743
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1995143737}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cdda8611c2db0de45897823407c4bbcd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  CloseBtn: {fileID: 1995143739}
+  CanvasToClose: {fileID: 1407284062}
 --- !u!1001 &2000864672
 PrefabInstance:
   m_ObjectHideFlags: 0

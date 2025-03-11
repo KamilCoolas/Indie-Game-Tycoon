@@ -17,5 +17,10 @@ namespace Assets.Scripts
             mText.text = "Money: " + GameLogic.money + "$";
             tText.text = "Turn: " + GameLogic.turn;
         }
+        public static void UpdateMoney(int moneyToAdd)
+        {
+            GameLogic.money += moneyToAdd;
+            UpdateMoneyTurnText();
+        }
     }
 }
