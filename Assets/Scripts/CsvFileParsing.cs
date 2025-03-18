@@ -8,9 +8,9 @@ using UnityEngine;
 
 namespace Assets.Scripts
 {
-    internal static class CsvFileParsing
+    internal class CsvFileParsing
     {
-        public static string[,] ParseTextAsset(TextAsset ft)
+        public string[,] ParseTextAsset(TextAsset ft)
         {
             string fs = ft.text;
             string[] fLines = Regex.Split(fs, "\r\n");

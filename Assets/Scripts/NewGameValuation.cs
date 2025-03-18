@@ -3,6 +3,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using System;
+using Assets.Scripts;
 
 public class NewGameValuation : MonoBehaviour
 {
@@ -21,18 +22,16 @@ public class NewGameValuation : MonoBehaviour
     int graphicValue;
     public static int estDurValue;
     public static int estCostValue;
-    string[,] genreListArray;
     Dictionary<string, int> genreId = new();
-    string[,] themeListArray;
     Dictionary<string, int> themeId = new();
-    string[,] graphicListArray;
     Dictionary<string, int> graphicId = new();
     private void Start()
     {
-        LoadingDropdownValues("genre", genreList, genreDropdown, genreListArray, genreId);
-        LoadingDropdownValues("theme", themeList, themeDropdown, themeListArray, themeId);
-        LoadingDropdownValues("graphic", graphicList, graphicDropdown, graphicListArray, graphicId);
-        TitleInput.onValueChanged.AddListener(delegate { RecalculateValues(); });
+        CsvFileParsing FileParser = new();
+        LoadingDropdownValues(FileParser, "genre", genreList, genreDropdown, genreId);
+        LoadingDropdownValues(FileParser, "theme", themeList, themeDropdown, themeId);
+        LoadingDropdownValues(FileParser, "graphic", graphicList, graphicDropdown, graphicId);
+        TitleInput.onValueChanged.AddListener(delegate { RecalculateValues(); }); 
     }
     void Update()
     {
@@ -50,9 +49,9 @@ public class NewGameValuation : MonoBehaviour
         }
         else CreateButton.interactable = false;
     }
-    void LoadingDropdownValues(string type, TextAsset file, TMP_Dropdown dropdown, string[,] ListArray, Dictionary<string, int> Id)
+    void LoadingDropdownValues(CsvFileParsing FileParser, string type, TextAsset file, TMP_Dropdown dropdown, Dictionary<string, int> Id)
     {
-        ListArray = Assets.Scripts.CsvFileParsing.ParseTextAsset(file);
+        string[,] ListArray = FileParser.ParseTextAsset(file);
         for (int i = 0; i < ListArray.GetLength(0); i++)
         {
             dropdown.options.Add(new TMP_Dropdown.OptionData() { text = ListArray[i, 1] });

@@ -4,10 +4,12 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using static System.Net.Mime.MediaTypeNames;
+using Image = UnityEngine.UI.Image;
 
 public class DropdownEmployees : MonoBehaviour
 {
-    public TMP_Text dropdownText;
+    public TMP_Dropdown DropEmp;
     public TMP_Text Arcade;
     public TMP_Text EndRun;
     public TMP_Text Platf;
@@ -26,12 +28,16 @@ public class DropdownEmployees : MonoBehaviour
     public Image Id2;
     public Image Id25;
     public Image Id3;
-
-    void Update()
+    void Start()
     {
-        if (dropdownText.text != "-")
+        DropEmp.onValueChanged.AddListener(delegate { OnChange(DropEmp); });
+    }
+
+    public void OnChange(TMP_Dropdown DropEmp)
+    {
+        if (DropEmp.captionText.text != "-")
         {
-            string[] empName = dropdownText.text.Split(".");
+            string[] empName = DropEmp.captionText.text.Split(".");
             int empId = Convert.ToInt32(empName[0]) - 1;
             string[] aArcade = GameLogic.employees[empId, 1].Split(".");
             string[] aEndRun = GameLogic.employees[empId, 2].Split(".");

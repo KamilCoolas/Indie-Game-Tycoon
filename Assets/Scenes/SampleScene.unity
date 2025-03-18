@@ -1255,7 +1255,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ebcad769b9d3b424d98759f86c414384, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  dropdownText: {fileID: 576038751}
+  DropEmp: {fileID: 186870246}
   Arcade: {fileID: 1589346333}
   EndRun: {fileID: 1921842462}
   Platf: {fileID: 139541555}
@@ -3691,11 +3691,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 476425570}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4ec79e415f033a34499a6ef0411c0356, type: 3}
+  m_Script: {fileID: 11500000, guid: 1c56fb4ba073f31458eb0edaad14062a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ReleasedGame: {fileID: 476425572}
-  ReleasedGamesCanvas: {fileID: 75229865}
+  Button: {fileID: 476425572}
+  Canvas: {fileID: 75229865}
+  TextToDefault: {fileID: 0}
+  DropdownToDefault: {fileID: 1949418997}
 --- !u!114 &482837649 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 4301125590050303500, guid: b6adf2f20fdae624abc887c999597ac8, type: 3}
@@ -4927,6 +4929,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   EmpDrop: {fileID: 186870246}
+  MoneyText: {fileID: 1173556015}
+  TurnText: {fileID: 1532324858}
 --- !u!4 &610855016
 Transform:
   m_ObjectHideFlags: 0
@@ -7304,12 +7308,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 900749774}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f40b671d31a225343a4798992efe2e5a, type: 3}
+  m_Script: {fileID: 11500000, guid: 1c56fb4ba073f31458eb0edaad14062a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  CreateNewButton: {fileID: 900749777}
-  CreateCanvas: {fileID: 206050349}
-  Title: {fileID: 1792914680}
+  Button: {fileID: 900749777}
+  Canvas: {fileID: 206050349}
+  TextToDefault: {fileID: 1792914680}
+  DropdownToDefault: {fileID: 0}
 --- !u!1 &911269010
 GameObject:
   m_ObjectHideFlags: 0
@@ -8235,11 +8240,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   CreateBtn: {fileID: 987289198}
+  CreateNewGameButton: {fileID: 900749777}
   CreateCanvas: {fileID: 206050349}
   genreDropdown: {fileID: 1583440715}
   themeDropdown: {fileID: 1697650032}
   graphicsDropdown: {fileID: 956319991}
   title: {fileID: 1792914680}
+  GameLogicObject: {fileID: 610855014}
 --- !u!114 &987289198
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -10311,9 +10318,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   NextTurnBtn: {fileID: 1301194623}
+  CreateNewGameButton: {fileID: 900749777}
   GameDrop: {fileID: 1949418997}
   moneyText: {fileID: 1173556015}
   turnText: {fileID: 1532324858}
+  GameRel: {fileID: 1407284062}
+  GameLogicObject: {fileID: 610855014}
 --- !u!1 &1313597049
 GameObject:
   m_ObjectHideFlags: 0
@@ -12620,11 +12630,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 1606064973}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4ec79e415f033a34499a6ef0411c0356, type: 3}
+  m_Script: {fileID: 11500000, guid: 1c56fb4ba073f31458eb0edaad14062a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ReleasedGame: {fileID: 1606064975}
-  ReleasedGamesCanvas: {fileID: 862477003}
+  Button: {fileID: 1606064975}
+  Canvas: {fileID: 862477003}
+  TextToDefault: {fileID: 0}
+  DropdownToDefault: {fileID: 186870246}
 --- !u!1 &1610370062
 GameObject:
   m_ObjectHideFlags: 0

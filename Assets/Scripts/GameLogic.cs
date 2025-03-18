@@ -5,6 +5,7 @@ using UnityEngine.UI;
 using TMPro;
 using System;
 using Assets.Scripts;
+using Random = UnityEngine.Random;
 
 
 public class GameLogic : MonoBehaviour
@@ -31,6 +32,8 @@ public class GameLogic : MonoBehaviour
         {"3D", 9}
     };
     public TMP_Dropdown EmpDrop;
+    public TMP_Text MoneyText;
+    public TMP_Text TurnText;
     void Start()
     {
         employees[0, 0] = "You";
@@ -44,25 +47,25 @@ public class GameLogic : MonoBehaviour
         employees[0, 8] = "0.00";
         employees[0, 9] = "0.00";
         EmpDrop.options.Add(new TMP_Dropdown.OptionData() { text = "1.You" });
-        UpdateMoneyTurn.UpdateMoneyTurnText();
+        UpdateMoneyTurnText();
     }
     void Update()
     {
     }
-    public static int AttributeLevel(int atributeValue)
+    public int AttributeLevel(int atributeValue)
     {
         string[] aAttribute = employees[0, atributeValue].Split(".");
         int level = Convert.ToInt32(aAttribute[0]);
         return level;
     }
-    public static int CalculateSaleInWeek(int releasedTurn, float avgScore)
+    public int CalculateSaleInWeek(int releasedTurn, float avgScore)
     {
         float scoreMultiplier = avgScore * avgScore * 100;
         int turnMultiplier = (turn + 1) - releasedTurn;
         int value = (int)scoreMultiplier / (turnMultiplier * turnMultiplier);
         return value;
     }
-    public static void SalesCalculation(string[,] gamesReleased)
+    public void SalesCalculation(string[,] gamesReleased)
     {
         int price = 19;
         for (int i = 0; i < gamesReleased.GetLength(0); i++)
@@ -73,12 +76,45 @@ public class GameLogic : MonoBehaviour
                 int profit = sales * price;
                 int overallsales = Convert.ToInt32(gamesReleased[i, 14]) + sales;
                 int overallprofit = Convert.ToInt32(gamesReleased[i, 15]) + profit;
-                UpdateMoneyTurn.UpdateMoney(profit);
+                UpdateMoney(profit);
                 gamesReleased[i, 12] = sales.ToString();
                 gamesReleased[i, 13] = profit.ToString();
                 gamesReleased[i, 14] = overallsales.ToString();
                 gamesReleased[i, 15] = overallprofit.ToString();
             }
         }
+    }
+    public void UpdateMoneyTurnText()
+    {
+
+        MoneyText.text = "Money: " + money + "$";
+        TurnText.text = "Turn: " + turn;
+    }
+    public void UpdateMoney(int moneyToAdd)
+    {
+        money += moneyToAdd;
+        UpdateMoneyTurnText();
+    }
+    public void GameQuality()
+    {
+        int gameQuality = 0;
+        for (int i = 1; i <= 3; i++)
+        {
+            gameQuality += (AttributeLevel(atributeId[gameInProgress[i]]));
+        }
+        gameQuality /= 3;
+        int maxRating = gameQuality + 2;
+        if (gameQuality >= 10) gameQuality = 9;
+        if (maxRating >= 11) maxRating = 11;
+        float avarageScore = 0;
+        for (int i = 6; i <= 9; i++)
+        {
+            int review = Random.Range(gameQuality, maxRating);
+            avarageScore += review;
+            gamesReleased[numberOfGamesIndex, i] = review.ToString();
+        }
+        avarageScore /= 4.0f;
+        gamesReleased[numberOfGamesIndex, 10] = avarageScore.ToString();
+        gamesReleased[numberOfGamesIndex, 11] = turn.ToString();
     }
 }
