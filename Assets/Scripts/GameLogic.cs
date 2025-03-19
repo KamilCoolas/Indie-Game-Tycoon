@@ -6,6 +6,7 @@ using TMPro;
 using System;
 using Assets.Scripts;
 using Random = UnityEngine.Random;
+using UnityEditor;
 
 
 public class GameLogic : MonoBehaviour
@@ -34,6 +35,8 @@ public class GameLogic : MonoBehaviour
     public TMP_Dropdown EmpDrop;
     public TMP_Text MoneyText;
     public TMP_Text TurnText;
+    private List<MoneyChange> moneyChangeList = new List<MoneyChange>();
+    public GameObject IncomeCostText;
     void Start()
     {
         employees[0, 0] = "You";
@@ -76,7 +79,7 @@ public class GameLogic : MonoBehaviour
                 int profit = sales * price;
                 int overallsales = Convert.ToInt32(gamesReleased[i, 14]) + sales;
                 int overallprofit = Convert.ToInt32(gamesReleased[i, 15]) + profit;
-                UpdateMoney(profit);
+                if (profit != 0) UpdateMoney(profit, gamesReleased[i, 1]);
                 gamesReleased[i, 12] = sales.ToString();
                 gamesReleased[i, 13] = profit.ToString();
                 gamesReleased[i, 14] = overallsales.ToString();
@@ -86,12 +89,13 @@ public class GameLogic : MonoBehaviour
     }
     public void UpdateMoneyTurnText()
     {
-
         MoneyText.text = "Money: " + money + "$";
         TurnText.text = "Turn: " + turn;
     }
-    public void UpdateMoney(int moneyToAdd)
+    public void UpdateMoney(int moneyToAdd, string source)
     {
+        MoneyChange itemToDisplay = new MoneyChange(moneyToAdd, source);
+        moneyChangeList.Add(itemToDisplay);
         money += moneyToAdd;
         UpdateMoneyTurnText();
     }
@@ -116,5 +120,18 @@ public class GameLogic : MonoBehaviour
         avarageScore /= 4.0f;
         gamesReleased[numberOfGamesIndex, 10] = avarageScore.ToString();
         gamesReleased[numberOfGamesIndex, 11] = turn.ToString();
+    }
+    public void IncomeCostTextGenerator()
+    {
+        for (int i = 0; i < moneyChangeList.Count; i++)
+        {
+            Vector3 position = new Vector3(0f, 0f, 0f);
+            GameObject obj = Instantiate(IncomeCostText, position, Quaternion.identity);
+            var InitScript = obj.GetComponent<InitialScript>();
+            InitScript.SetAmount(moneyChangeList[i].Amount);
+            InitScript.SetSource(moneyChangeList[i].Source);
+            InitScript.SetY(i);
+        }
+        moneyChangeList.Clear();
     }
 }

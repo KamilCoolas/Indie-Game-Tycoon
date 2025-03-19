@@ -24,7 +24,8 @@ public class CreateButton : MonoBehaviour
     public void OnClick(GameLogic logic)
     {
         GameLogic.gameInProgress = new string[] { title.text, genreDropdown.text, themeDropdown.text, graphicsDropdown.text, NewGameValuation.estCostValue.ToString(), NewGameValuation.estDurValue.ToString() };
-        GameLogic.money -= NewGameValuation.estCostValue;
+        logic.UpdateMoney(-NewGameValuation.estCostValue, title.text);
+        logic.IncomeCostTextGenerator();
         GameLogic.isGameInProgress = true;
         CreateCanvas.enabled = false;
         CreateNewGameButton.interactable = false;

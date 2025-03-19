@@ -30,6 +30,7 @@ public class DropdownEmployees : MonoBehaviour
     public Image Id3;
     void Start()
     {
+        NullOptions();
         DropEmp.onValueChanged.AddListener(delegate { OnChange(DropEmp); });
     }
 
@@ -69,24 +70,28 @@ public class DropdownEmployees : MonoBehaviour
         }
         else
         {
-            Arcade.text = "lvl -";
-            EndRun.text = "lvl -";
-            Platf.text = "lvl -";
-            Space.text = "lvl -";
-            Pirates.text = "lvl -";
-            Fantasy.text = "lvl -";
-            d2.text = "lvl -";
-            d25.text = "lvl -";
-            d3.text = "lvl -";
-            IArcade.rectTransform.sizeDelta = new Vector2(0, 20);
-            IEndRun.rectTransform.sizeDelta = new Vector2(0, 20);
-            IPlatf.rectTransform.sizeDelta = new Vector2(0, 20);
-            ISpace.rectTransform.sizeDelta = new Vector2(0, 20);
-            IPirates.rectTransform.sizeDelta = new Vector2(0, 20);
-            IFantasy.rectTransform.sizeDelta = new Vector2(0, 20);
-            Id2.rectTransform.sizeDelta = new Vector2(0, 20);
-            Id25.rectTransform.sizeDelta = new Vector2(0, 20);
-            Id3.rectTransform.sizeDelta = new Vector2(0, 20);
+            NullOptions();
         }
+    }
+    private void NullOptions()
+    {
+        Arcade.text = "lvl -";
+        EndRun.text = "lvl -";
+        Platf.text = "lvl -";
+        Space.text = "lvl -";
+        Pirates.text = "lvl -";
+        Fantasy.text = "lvl -";
+        d2.text = "lvl -";
+        d25.text = "lvl -";
+        d3.text = "lvl -";
+        IArcade.rectTransform.sizeDelta = new Vector2(0, 20);
+        IEndRun.rectTransform.sizeDelta = new Vector2(0, 20);
+        IPlatf.rectTransform.sizeDelta = new Vector2(0, 20);
+        ISpace.rectTransform.sizeDelta = new Vector2(0, 20);
+        IPirates.rectTransform.sizeDelta = new Vector2(0, 20);
+        IFantasy.rectTransform.sizeDelta = new Vector2(0, 20);
+        Id2.rectTransform.sizeDelta = new Vector2(0, 20);
+        Id25.rectTransform.sizeDelta = new Vector2(0, 20);
+        Id3.rectTransform.sizeDelta = new Vector2(0, 20);
     }
 }

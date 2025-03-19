@@ -26,7 +26,7 @@ public class NextTurnButton : MonoBehaviour
     public void OnClick(GameLogic logic)
     {
         GameLogic.turn++;
-        GameLogic.money -= GameLogic.costPerTurn;
+        logic.UpdateMoney(-GameLogic.costPerTurn, "Maintenance");
         logic.UpdateMoneyTurnText();
         if (GameLogic.gamesReleased[0,0] != null) logic.SalesCalculation(GameLogic.gamesReleased);
         if (GameLogic.isGameInProgress)
@@ -53,6 +53,7 @@ public class NextTurnButton : MonoBehaviour
             GameRel.GetComponent<GameReleased>().AssignReviewText();
             CreateNewGameButton.interactable = true;
         }
+        logic.IncomeCostTextGenerator();
     }
     public void ExpGain (int atributeValue)
     {
