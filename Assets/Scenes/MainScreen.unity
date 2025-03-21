@@ -3369,7 +3369,7 @@ Canvas:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 368088174}
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 3
   m_RenderMode: 1
   m_Camera: {fileID: 519420031}
@@ -5005,6 +5005,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0ada7023eb7cb1649a09e005d42e67ad, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  GameDrop: {fileID: 1949418997}
+  CreateNewGameButton: {fileID: 900749777}
+  GameRel: {fileID: 1407284062}
   EmpDrop: {fileID: 186870246}
   MoneyText: {fileID: 1173556015}
   TurnText: {fileID: 1532324858}
@@ -5036,10 +5039,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2d339f064adf46944804874271cf3fe2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  title: {fileID: 618930335}
-  genre: {fileID: 891720117}
-  theme: {fileID: 2126150290}
-  turnLeft: {fileID: 148606904}
+  titleText: {fileID: 618930335}
+  genreText: {fileID: 891720117}
+  themeText: {fileID: 2126150290}
+  turnLeftText: {fileID: 148606904}
   gameInPro: {fileID: 368088177}
 --- !u!1 &613498710
 GameObject:
@@ -10397,10 +10400,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   NextTurnBtn: {fileID: 1301194623}
   CreateNewGameButton: {fileID: 900749777}
+  GameRel: {fileID: 1407284062}
   GameDrop: {fileID: 1949418997}
   moneyText: {fileID: 1173556015}
   turnText: {fileID: 1532324858}
-  GameRel: {fileID: 1407284062}
   GameLogicObject: {fileID: 610855014}
 --- !u!1 &1313597049
 GameObject:
@@ -15055,6 +15058,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5a22cd7cccb3dd940b9e3ef54764e254, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  DropGames: {fileID: 1949418997}
+  GameLogicObject: {fileID: 610855014}
   dropdownText: {fileID: 1614948258}
   Title: {fileID: 981892864}
   Genre: {fileID: 1080180053}

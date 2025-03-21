@@ -11,7 +11,7 @@ using UnityEditor;
 
 public class GameLogic : MonoBehaviour
 {
-    public static string[,] gamesReleased = new string[100,16];
+    public List<Game> gamesReleased = new List<Game>();
     public static string[,] employees = new string[100, 11];
     public static string[] gameInProgress;
     public static bool isGameReleased = false;
@@ -19,7 +19,7 @@ public class GameLogic : MonoBehaviour
     public static int money = 10000;
     public static int turn = 1;
     public static int costPerTurn = 500;
-    public static int numberOfGamesIndex = 0;
+    public static int numberOfGamesIndex = 1;
     public static Dictionary<string, int> atributeId = new Dictionary<string, int>
     {
         {"Arcade", 1},
@@ -32,6 +32,9 @@ public class GameLogic : MonoBehaviour
         {"2.5D", 8},
         {"3D", 9}
     };
+    public TMP_Dropdown GameDrop;
+    public Button CreateNewGameButton;
+    public Canvas GameRel;
     public TMP_Dropdown EmpDrop;
     public TMP_Text MoneyText;
     public TMP_Text TurnText;
@@ -61,32 +64,6 @@ public class GameLogic : MonoBehaviour
         int level = Convert.ToInt32(aAttribute[0]);
         return level;
     }
-    public int CalculateSaleInWeek(int releasedTurn, float avgScore)
-    {
-        float scoreMultiplier = avgScore * avgScore * 100;
-        int turnMultiplier = (turn + 1) - releasedTurn;
-        int value = (int)scoreMultiplier / (turnMultiplier * turnMultiplier);
-        return value;
-    }
-    public void SalesCalculation(string[,] gamesReleased)
-    {
-        int price = 19;
-        for (int i = 0; i < gamesReleased.GetLength(0); i++)
-        {
-            if (gamesReleased[i, 0] != null)
-            {
-                int sales = CalculateSaleInWeek(Convert.ToInt32(gamesReleased[i, 11]), Single.Parse(gamesReleased[i, 10]));
-                int profit = sales * price;
-                int overallsales = Convert.ToInt32(gamesReleased[i, 14]) + sales;
-                int overallprofit = Convert.ToInt32(gamesReleased[i, 15]) + profit;
-                if (profit != 0) UpdateMoney(profit, gamesReleased[i, 1]);
-                gamesReleased[i, 12] = sales.ToString();
-                gamesReleased[i, 13] = profit.ToString();
-                gamesReleased[i, 14] = overallsales.ToString();
-                gamesReleased[i, 15] = overallprofit.ToString();
-            }
-        }
-    }
     public void UpdateMoneyTurnText()
     {
         MoneyText.text = "Money: " + money + "$";
@@ -99,27 +76,10 @@ public class GameLogic : MonoBehaviour
         money += moneyToAdd;
         UpdateMoneyTurnText();
     }
-    public void GameQuality()
+    public int CalculateGameQuality(Game game)
     {
-        int gameQuality = 0;
-        for (int i = 1; i <= 3; i++)
-        {
-            gameQuality += (AttributeLevel(atributeId[gameInProgress[i]]));
-        }
-        gameQuality /= 3;
-        int maxRating = gameQuality + 2;
-        if (gameQuality >= 10) gameQuality = 9;
-        if (maxRating >= 11) maxRating = 11;
-        float avarageScore = 0;
-        for (int i = 6; i <= 9; i++)
-        {
-            int review = Random.Range(gameQuality, maxRating);
-            avarageScore += review;
-            gamesReleased[numberOfGamesIndex, i] = review.ToString();
-        }
-        avarageScore /= 4.0f;
-        gamesReleased[numberOfGamesIndex, 10] = avarageScore.ToString();
-        gamesReleased[numberOfGamesIndex, 11] = turn.ToString();
+        int gameQuality = (AttributeLevel(atributeId[game.Genre]) + AttributeLevel(atributeId[game.Theme]) + AttributeLevel(atributeId[game.Graphics])) / 3;
+        return gameQuality;
     }
     public void IncomeCostTextGenerator()
     {
@@ -133,5 +93,29 @@ public class GameLogic : MonoBehaviour
             InitScript.SetY(i);
         }
         moneyChangeList.Clear();
+    }
+    public void GenerateIncome()
+    {
+        for (int i = 0; i < gamesReleased.Count; i++)
+        {
+            gamesReleased[i].SalesCalculation(turn);
+            int profit = gamesReleased[i].GetIncomeForTurn(turn);
+            if (profit != 0) UpdateMoney(profit, gamesReleased[i].Title);
+        }
+    }
+    public void GameReleased()
+    {
+        Game newGame = new(gameInProgress[0], gameInProgress[1], gameInProgress[2], gameInProgress[3]);
+        newGame.GameQuality = CalculateGameQuality(newGame);
+        newGame.ReleasedTurn = turn;
+        newGame.ReviewGenerator();
+        gamesReleased.Add(newGame);
+        GameDrop.options.Add(new TMP_Dropdown.OptionData() { text = numberOfGamesIndex + "." + newGame.Title });
+        numberOfGamesIndex++;
+        gameInProgress = new string[] { };
+        isGameReleased = true;
+        isGameInProgress = false;
+        GameRel.GetComponent<GameReleased>().AssignReviewText(newGame);
+        CreateNewGameButton.interactable = true;
     }
 }

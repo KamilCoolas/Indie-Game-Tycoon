@@ -1,10 +1,6 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
-using UnityEngine.UI;
-using static System.Net.Mime.MediaTypeNames;
 using Image = UnityEngine.UI.Image;
 
 public class DropdownEmployees : MonoBehaviour

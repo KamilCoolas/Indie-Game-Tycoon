@@ -3,7 +3,9 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
+using Unity.VisualScripting.Antlr3.Runtime.Tree;
 using UnityEngine;
+using UnityEngine.Analytics;
 using UnityEngine.UI;
 using static UnityEngine.GraphicsBuffer;
 
@@ -12,10 +14,10 @@ public class NextTurnButton : MonoBehaviour
 {
     public Button NextTurnBtn;
     public Button CreateNewGameButton;
+    public Canvas GameRel;
     public TMP_Dropdown GameDrop;
     public TMP_Text moneyText;
     public TMP_Text turnText;
-    public Canvas GameRel;
     public GameObject GameLogicObject;
     void Start()
     {
@@ -28,7 +30,7 @@ public class NextTurnButton : MonoBehaviour
         GameLogic.turn++;
         logic.UpdateMoney(-GameLogic.costPerTurn, "Maintenance");
         logic.UpdateMoneyTurnText();
-        if (GameLogic.gamesReleased[0,0] != null) logic.SalesCalculation(GameLogic.gamesReleased);
+        logic.GenerateIncome();
         if (GameLogic.isGameInProgress)
         {
             GameLogic.gameInProgress[5] = (Convert.ToInt32(GameLogic.gameInProgress[5]) - 1).ToString();
@@ -39,19 +41,7 @@ public class NextTurnButton : MonoBehaviour
         }
         if (GameLogic.isGameInProgress && Convert.ToInt32(GameLogic.gameInProgress[5]) <= 0)
         {
-            for (int i = 0; i < 6; i++)
-            {
-                if (i == 0) GameLogic.gamesReleased[GameLogic.numberOfGamesIndex, i] = (GameLogic.numberOfGamesIndex + 1).ToString();
-                else GameLogic.gamesReleased[GameLogic.numberOfGamesIndex, i] = GameLogic.gameInProgress[i - 1];
-            }
-            logic.GameQuality();
-            GameDrop.options.Add(new TMP_Dropdown.OptionData() { text = GameLogic.gamesReleased[GameLogic.numberOfGamesIndex, 0] + "." + GameLogic.gamesReleased[GameLogic.numberOfGamesIndex, 1] });
-            GameLogic.numberOfGamesIndex += 1;
-            GameLogic.gameInProgress = new string[] { };
-            GameLogic.isGameReleased = true;
-            GameLogic.isGameInProgress = false;
-            GameRel.GetComponent<GameReleased>().AssignReviewText();
-            CreateNewGameButton.interactable = true;
+            logic.GameReleased();
         }
         logic.IncomeCostTextGenerator();
     }

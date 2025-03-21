@@ -1,9 +1,6 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
-using Assets.Scripts;
 
 public class CreateButton : MonoBehaviour
 {

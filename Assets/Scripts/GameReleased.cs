@@ -1,3 +1,4 @@
+using Assets.Scripts;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
@@ -15,15 +16,15 @@ public class GameReleased : MonoBehaviour
     void Update()
     {
     }
-    public void AssignReviewText()
+    public void AssignReviewText(Game newGame)
     {
         GameRel.enabled = true;
-        Title.text = "Title: " + GameLogic.gamesReleased[GameLogic.numberOfGamesIndex - 1, 1];
-        Rev1.text = "Review 1: " + GameLogic.gamesReleased[GameLogic.numberOfGamesIndex - 1, 6] + "/10";
-        Rev2.text = "Review 2: " + GameLogic.gamesReleased[GameLogic.numberOfGamesIndex - 1, 7] + "/10";
-        Rev3.text = "Review 3: " + GameLogic.gamesReleased[GameLogic.numberOfGamesIndex - 1, 8] + "/10";
-        Rev4.text = "Review 4: " + GameLogic.gamesReleased[GameLogic.numberOfGamesIndex - 1, 9] + "/10";
-        Avg.text = "Avarage Score: " + GameLogic.gamesReleased[GameLogic.numberOfGamesIndex - 1, 10] + "/10";
+        Title.text = "Title: " + newGame.Title;
+        Rev1.text = "Review 1: " + newGame.ReviewList[0].Rate + "/10";
+        Rev2.text = "Review 2: " + newGame.ReviewList[1].Rate + "/10";
+        Rev3.text = "Review 3: " + newGame.ReviewList[2].Rate + "/10";
+        Rev4.text = "Review 4: " + newGame.ReviewList[3].Rate + "/10";
+        Avg.text = "Avarage Score: " + newGame.GetAvarageScore() + "/10";
         GameLogic.isGameReleased = false;
     }
 }

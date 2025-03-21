@@ -1,27 +1,24 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
 using TMPro;
 
 public class GameInProgress : MonoBehaviour
 {
-    public TMP_Text title;
-    public TMP_Text genre;
-    public TMP_Text theme;
-    public TMP_Text turnLeft;
+    public TMP_Text titleText;
+    public TMP_Text genreText;
+    public TMP_Text themeText;
+    public TMP_Text turnLeftText;
     public Canvas gameInPro;
-
     void Update()
     {
         if (GameLogic.isGameInProgress)
         {
             gameInPro.enabled = true;
-            title.text = GameLogic.gameInProgress[0];
-            genre.text = GameLogic.gameInProgress[1];
-            theme.text = GameLogic.gameInProgress[2];
-            turnLeft.text = "Turn Left: " + GameLogic.gameInProgress[5];
+            titleText.text = GameLogic.gameInProgress[0];
+            genreText.text = GameLogic.gameInProgress[1];
+            themeText.text = GameLogic.gameInProgress[2];
+            turnLeftText.text = "Turn Left: " + GameLogic.gameInProgress[5];
         }
         else gameInPro.enabled = false;
     }
+
 }
