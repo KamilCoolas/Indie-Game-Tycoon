@@ -66,7 +66,7 @@ public class GameLogic : MonoBehaviour
     }
     public void UpdateMoneyTurnText()
     {
-        MoneyText.text = "Money: " + money + "$";
+        MoneyText.text = money + "$";
         TurnText.text = "Turn: " + turn;
     }
     public void UpdateMoney(int moneyToAdd, string source)

@@ -10,7 +10,7 @@ public class InitialScript : MonoBehaviour
     public TMP_Text Source;
     public int lifeTimeInSeconds;
     public int distanceBetweenNext;
-    private int counter;
+    private float counter;
     // Start is called before the first frame update
     void Start()
     {
@@ -20,12 +20,12 @@ public class InitialScript : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        counter++;
-        if (counter > lifeTimeInSeconds*60) Destroy(Self);
+        counter += Time.deltaTime;
+        if (counter > lifeTimeInSeconds) Destroy(Self);
     }
     public void SetAmount(int amount)
     {
-        Amount.text = amount.ToString();
+        Amount.text = amount.ToString() + "$";
         if (amount < 0)
         {
             Amount.color = Color.red;
@@ -45,7 +45,7 @@ public class InitialScript : MonoBehaviour
     {
         RectTransform AmountRt = Amount.GetComponent<RectTransform>();
         RectTransform SourceRt = Source.GetComponent<RectTransform>();
-        AmountRt.anchoredPosition += new Vector2(0, -(order * distanceBetweenNext));
-        SourceRt.anchoredPosition += new Vector2(0, -(order * distanceBetweenNext));
+        AmountRt.anchoredPosition += new Vector2(0, (order * distanceBetweenNext));
+        SourceRt.anchoredPosition += new Vector2(0, (order * distanceBetweenNext));
     }
 }
