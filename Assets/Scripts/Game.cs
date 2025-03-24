@@ -9,11 +9,13 @@ namespace Assets.Scripts
         private string genre;
         private string theme;
         private string graphics;
+        private int gameDuration = 24;
         private int price = 19;
         private int gameQuality;
         private List<Review> reviewList = new List<Review>();
         private int releasedTurn;
         private List<Sales> salesList = new List<Sales>();
+        private int agents = 0;
 
         public Game(string title, string genre, string theme, string graphics)
         {
@@ -21,6 +23,14 @@ namespace Assets.Scripts
             this.genre = genre;
             this.theme = theme;
             this.graphics = graphics;
+        }
+        public Game(string title, string genre, string theme, string graphics, int gameQuality)
+        {
+            this.title = title;
+            this.genre = genre;
+            this.theme = theme;
+            this.graphics = graphics;
+            this.gameQuality = gameQuality;
         }
         public string Title
         {
@@ -47,6 +57,11 @@ namespace Assets.Scripts
             get { return price; }
             set { price = value; }
         }
+        public int GameDuration
+        {
+            get { return gameDuration; }
+            set { gameDuration = value; }
+        }
         public int GameQuality
         {
             get { return gameQuality; }
@@ -61,6 +76,11 @@ namespace Assets.Scripts
         {
             get { return releasedTurn; }
             set { releasedTurn = value; }
+        }
+        public int Agents
+        {
+            get { return agents; }
+            set { agents = value; }
         }
         public List<Sales> SalesList
         {

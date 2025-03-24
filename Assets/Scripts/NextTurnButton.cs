@@ -28,6 +28,7 @@ public class NextTurnButton : MonoBehaviour
     public void OnClick(GameLogic logic)
     {
         GameLogic.turn++;
+        logic.AgentsPlayingGames();
         logic.UpdateMoney(-GameLogic.costPerTurn, "Maintenance");
         logic.UpdateMoneyTurnText();
         logic.GenerateIncome();

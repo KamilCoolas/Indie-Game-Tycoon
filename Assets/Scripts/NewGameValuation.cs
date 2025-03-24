@@ -22,9 +22,9 @@ public class NewGameValuation : MonoBehaviour
     int graphicValue;
     public static int estDurValue;
     public static int estCostValue;
-    Dictionary<string, int> genreId = new();
-    Dictionary<string, int> themeId = new();
-    Dictionary<string, int> graphicId = new();
+    public Dictionary<string, int> genreId = new();
+    public Dictionary<string, int> themeId = new();
+    public Dictionary<string, int> graphicId = new();
     private void Start()
     {
         CsvFileParsing FileParser = new();
