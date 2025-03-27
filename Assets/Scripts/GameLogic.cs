@@ -71,8 +71,8 @@ public class GameLogic : MonoBehaviour
         employees[0, 9] = "0.00";
         EmpDrop.options.Add(new TMP_Dropdown.OptionData() { text = "1.You" });
         UpdateMoneyTurnText();
-        GenerateGames(10);
-        GenerateAgents(1000);
+        GenerateGames(100);
+        GenerateAgents(10000);
     }
     void Update()
     {
@@ -117,7 +117,6 @@ public class GameLogic : MonoBehaviour
     {
         for (int i = 0; i < gamesReleased.Count; i++)
         {
-            gamesReleased[i].SalesCalculation(turn);
             int profit = gamesReleased[i].GetIncomeForTurn(turn);
             if (profit != 0) UpdateMoney(profit, gamesReleased[i].Title);
         }
@@ -158,7 +157,7 @@ public class GameLogic : MonoBehaviour
             List<AgentFavorite> genreList = new(AgentFavoritesGenerator(1,4, Random.Range(1, 4)));
             List<AgentFavorite> themeList = new(AgentFavoritesGenerator(4, 7, Random.Range(1, 4)));
             List<AgentFavorite> graphicsList = new(AgentFavoritesGenerator(7, 10, Random.Range(1, 4)));
-            Agent agent = new Agent(genreList, themeList, graphicsList, Random.Range(4, 40));
+            Agent agent = new Agent(genreList, themeList, graphicsList, Random.Range(1, 24), Random.Range(1, 100));
             allAgents.Add(agent);
         }
     }
@@ -172,7 +171,7 @@ public class GameLogic : MonoBehaviour
         }
         return agentFavorites;
     }
-    public void AgentsPlayingGames()
+    public void AgentsPlayingAndBuyingGames()
     {
         foreach (var game in allGames)
         {
@@ -181,8 +180,19 @@ public class GameLogic : MonoBehaviour
         foreach (var agent in allAgents)
         {
             agent.PlayGame(allGames);
-            Game game = allGames.Find(x => x.Equals(agent.CurrentPlayingGame));
-            game.Agents++;
+            Game gameAgents = allGames.Find(x => x.Equals(agent.CurrentPlayingGame));
+            gameAgents.Agents += agent.StatisticMultiplier;
+            if (agent.BoughtGameThisWeek != null)
+            {
+                Game gameBought = allGames.Find(x => x.Equals(agent.BoughtGameThisWeek));
+                gameBought.GameSalesThisWeek += agent.StatisticMultiplier;
+                agent.BoughtGameThisWeek = null;
+            }
+        }
+        foreach (var game in allGames)
+        {
+            game.SalesCalculation(turn);
+            game.GameSalesThisWeek = 0;
         }
     }
 }

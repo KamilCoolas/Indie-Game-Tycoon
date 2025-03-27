@@ -16,6 +16,7 @@ namespace Assets.Scripts
         private int releasedTurn;
         private List<Sales> salesList = new List<Sales>();
         private int agents = 0;
+        private int gameSalesThisWeek = 0;
 
         public Game(string title, string genre, string theme, string graphics)
         {
@@ -82,21 +83,26 @@ namespace Assets.Scripts
             get { return agents; }
             set { agents = value; }
         }
+        public int GameSalesThisWeek
+        {
+            get { return gameSalesThisWeek; }
+            set { gameSalesThisWeek = value; }
+        }
         public List<Sales> SalesList
         {
             get { return salesList; }
             set { salesList = value; }
         }
-        public int CalculateSaleInWeek(int releasedTurn, float avgScore, int turn)
-        {
-            float scoreMultiplier = avgScore * avgScore * 100;
-            int turnMultiplier = (turn + 1) - releasedTurn;
-            int value = (int)scoreMultiplier / (turnMultiplier * turnMultiplier);
-            return value;
-        }
+        //public int CalculateSaleInWeek(int releasedTurn, float avgScore, int turn)
+        //{
+        //    float scoreMultiplier = avgScore * avgScore * 100;
+        //    int turnMultiplier = (turn + 1) - releasedTurn;
+        //    int value = (int)scoreMultiplier / (turnMultiplier * turnMultiplier);
+        //    return value;
+        //}
         public void SalesCalculation(int turn)
         {
-                int sales = CalculateSaleInWeek(ReleasedTurn, GetAvarageScore(), turn);
+                int sales = gameSalesThisWeek;
                 Sales thisWeekSales = new(turn, sales, price);
                 SalesList.Add(thisWeekSales);
         }

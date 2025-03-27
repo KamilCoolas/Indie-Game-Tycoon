@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Random = UnityEngine.Random;
 
 namespace Assets.Scripts
 {
@@ -12,15 +13,20 @@ namespace Assets.Scripts
         private List<AgentFavorite> favoriteThemes = new List<AgentFavorite>();
         private List<AgentFavorite> favoriteGraphics = new List<AgentFavorite>();
         private int playingHoursPerWeek;
+        private int statisticMultiplier;
         private Game currentPlayingGame;
+        private Game boughtGameThisWeek;
         private List<Game> completedGames = new List<Game>();
+        private List<Game> boughtGames = new List<Game>();
+        private List<GameProgress> gameProgressList = new List<GameProgress>();
 
-        public Agent(List<AgentFavorite> favoriteGenres, List<AgentFavorite> favoriteThemes, List<AgentFavorite> favoriteGraphics, int playingHoursPerWeek)
+        public Agent(List<AgentFavorite> favoriteGenres, List<AgentFavorite> favoriteThemes, List<AgentFavorite> favoriteGraphics, int playingHoursPerWeek, int statisticMultiplier)
         {
             this.favoriteGenres = favoriteGenres;
             this.favoriteThemes = favoriteThemes;
             this.favoriteGraphics = favoriteGraphics;
             this.playingHoursPerWeek = playingHoursPerWeek;
+            this.statisticMultiplier = statisticMultiplier;
         }
         public List<AgentFavorite> FavoriteGenres
         {
@@ -42,15 +48,30 @@ namespace Assets.Scripts
             get { return playingHoursPerWeek; }
             set { playingHoursPerWeek = value; }
         }
+        public int StatisticMultiplier
+        {
+            get { return statisticMultiplier; }
+            set { statisticMultiplier = value; }
+        }
         public Game CurrentPlayingGame
         {
             get { return currentPlayingGame; }
             set { currentPlayingGame = value; }
         }
+        public Game BoughtGameThisWeek
+        {
+            get { return boughtGameThisWeek; }
+            set { boughtGameThisWeek = value; }
+        }
         public List<Game> CompletedGames
         { 
             get { return completedGames; } 
             set { completedGames = value; }
+        }
+        public List<Game> BoughtGames
+        {
+            get { return boughtGames; }
+            set { boughtGames = value; }
         }
         public Game CalculateCurrentPlayingGame(List<Game> listOfGames)
         {
@@ -71,6 +92,12 @@ namespace Assets.Scripts
                         gameToPlay = game;
                     }
                 }
+                if (gameToPlay == null) gameToPlay = boughtGames[Random.Range(0, boughtGames.Count)];
+            }
+            if (!boughtGames.Contains(gameToPlay))
+            {
+                boughtGames.Add(gameToPlay);
+                boughtGameThisWeek = gameToPlay;
             }
             return gameToPlay;
         }
@@ -78,16 +105,21 @@ namespace Assets.Scripts
         {
             if (currentPlayingGame != null)
             {
-                if (currentPlayingGame.GameDuration > 0) currentPlayingGame.GameDuration -= playingHoursPerWeek;
+                GameProgress gameInProgress = gameProgressList.Find(x => x.Game.Equals(currentPlayingGame));
+                if (gameInProgress.CurrentlyPlaying < currentPlayingGame.GameDuration) gameInProgress.CurrentlyPlaying += playingHoursPerWeek;
                 else
                 {
                     completedGames.Add(currentPlayingGame);
                     currentPlayingGame = CalculateCurrentPlayingGame(listOfGames);
+                    GameProgress gameStarted = new(currentPlayingGame, 0);
+                    gameProgressList.Add(gameStarted);
                 }
             }
             else
             {
                 currentPlayingGame = CalculateCurrentPlayingGame(listOfGames);
+                GameProgress gameStarted = new(currentPlayingGame, 0);
+                gameProgressList.Add(gameStarted);
             }
         }
         public int CompareGameAttributeAndFavorites (List<AgentFavorite> favoriteList, string gameAttribute)
