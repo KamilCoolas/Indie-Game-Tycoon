@@ -129,9 +129,8 @@ public class GameLogic : MonoBehaviour
         newGame.ReviewGenerator();
         gamesReleased.Add(newGame);
         allGames.Add(newGame);
-        GameDrop.options.Add(new TMP_Dropdown.OptionData() { text = numberOfGamesIndex + "." + newGame.Title });
-        AllGameDrop.options.Add(new TMP_Dropdown.OptionData() { text = numberOfGamesIndex + "." + newGame.Title });
-        numberOfGamesIndex++;
+        GameDrop.options.Add(new TMP_Dropdown.OptionData() { text = gamesReleased.Count + "." + newGame.Title });
+        AllGameDrop.options.Add(new TMP_Dropdown.OptionData() { text = allGames.Count + "." + newGame.Title });
         gameInProgress = new string[] { };
         isGameReleased = true;
         isGameInProgress = false;
