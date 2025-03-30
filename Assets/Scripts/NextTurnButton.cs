@@ -29,7 +29,7 @@ public class NextTurnButton : MonoBehaviour
     {
         GameLogic.turn++;
         //logic.GenerateGames(10);
-        logic.AgentsPlayingAndBuyingGames();
+        _ = logic.ConsumeNewTurnCalculation();
         logic.UpdateMoney(-GameLogic.costPerTurn, "Maintenance");
         logic.UpdateMoneyTurnText();
         logic.GenerateIncome();
@@ -46,6 +46,7 @@ public class NextTurnButton : MonoBehaviour
             logic.GameReleased();
         }
         logic.IncomeCostTextGenerator();
+        _ = logic.StartNewTurnCalculation();
     }
     public void ExpGain (int atributeValue)
     {

@@ -9,6 +9,12 @@ using Random = UnityEngine.Random;
 using UnityEditor;
 using System.Linq;
 using Unity.VisualScripting;
+using System.Threading;
+using System.Threading.Tasks;
+using TreeEditor;
+using System.ComponentModel;
+using static Unity.VisualScripting.Member;
+using System.Collections.Concurrent;
 
 
 public class GameLogic : MonoBehaviour
@@ -57,6 +63,9 @@ public class GameLogic : MonoBehaviour
     public GameObject IncomeCostText;
     public List<Game> allGames = new List<Game>();
     public List<Agent> allAgents = new List<Agent>();
+    public ConcurrentBag<(Game game, int agents, int bought)> gamesToUpdate = new ConcurrentBag<(Game, int, int)>();
+    private AsyncOperationManager<Agent> agentManager = new AsyncOperationManager<Agent>();
+    private AsyncOperationManager<Game> gameManager = new AsyncOperationManager<Game>();
     void Start()
     {
         employees[0, 0] = "You";
@@ -71,8 +80,9 @@ public class GameLogic : MonoBehaviour
         employees[0, 9] = "0.00";
         EmpDrop.options.Add(new TMP_Dropdown.OptionData() { text = "1.You" });
         UpdateMoneyTurnText();
-        GenerateGames(100);
+        GenerateGames(10);
         GenerateAgents(10000);
+        _ = StartNewTurnCalculation();
     }
     void Update()
     {
@@ -170,24 +180,72 @@ public class GameLogic : MonoBehaviour
         }
         return agentFavorites;
     }
-    public void AgentsPlayingAndBuyingGames()
+    public void NullGameAgents()
     {
         foreach (var game in allGames)
         {
             game.Agents = 0;
         }
+    }
+    //public void AgentsPlayingAndBuyingGames()
+    //{
+    //    foreach (var game in allGames)
+    //    {
+    //        game.SalesCalculation(turn);
+    //        game.GameSalesThisWeek = 0;
+    //    }
+    //}
+    async Task<Agent> AgentPlayingAndBuyingGame(Agent agent)
+    {
+        agent.PlayGame(allGames);
+        UpdateGamesToUpdateList(agent.CurrentPlayingGame, agent.StatisticMultiplier, 0);
+        //Debug.Log("Agent Playing: " + agent.CurrentPlayingGame.Title);
+        if (agent.BoughtGameThisWeek != null)
+        {
+            UpdateGamesToUpdateList(agent.CurrentPlayingGame, 0, agent.StatisticMultiplier);
+            //Debug.Log("Agent Buying: " + agent.BoughtGameThisWeek.Title);
+            agent.BoughtGameThisWeek = null;
+        }
+        return agent;
+    }
+    async Task<Game> GamePlayingAndBuying(Game game, int agents, int bought)
+    {
+        game.Agents = agents;
+        game.GameSalesThisWeek = bought;
+        Debug.Log("Game: " + game.Title + " Current Agents: " + game.Agents + " Current Sales: " + game.GameSalesThisWeek);
+        return game;
+    }
+    public async Task StartNewTurnCalculation()
+    {
         foreach (var agent in allAgents)
         {
-            agent.PlayGame(allGames);
-            Game gameAgents = allGames.Find(x => x.Equals(agent.CurrentPlayingGame));
-            gameAgents.Agents += agent.StatisticMultiplier;
-            if (agent.BoughtGameThisWeek != null)
-            {
-                Game gameBought = allGames.Find(x => x.Equals(agent.BoughtGameThisWeek));
-                gameBought.GameSalesThisWeek += agent.StatisticMultiplier;
-                agent.BoughtGameThisWeek = null;
-            }
+            await agentManager.AddOperationAsync(AgentPlayingAndBuyingGame, agent);
         }
+        await Task.WhenAll(agentManager.GetPendingTasks());
+        var result = gamesToUpdate
+            .GroupBy(item => item.game) // Grupujemy po stringu
+            .Select(group => (
+            game: group.Key,        // Klucz grupy (string)
+            agents: group.Sum(x => x.agents), // Suma pierwszej wartoœci int
+            bought: group.Sum(x => x.bought)  // Suma drugiej wartoœci int
+            ))
+            .ToList();
+        foreach (var game in result)
+        {
+            await gameManager.AddOperationAsync(g => GamePlayingAndBuying(g, game.agents, game.bought), game.game);
+        }
+    }
+    private void UpdateGamesToUpdateList(Game game, int agent, int bought)
+    {
+            gamesToUpdate.Add((game, agent, bought));
+    }
+    public async Task ConsumeNewTurnCalculation()
+    {
+        await agentManager.CommitChangesAsync();
+        Debug.Log("Agent Consume");
+        await gameManager.CommitChangesAsync();
+        Debug.Log("Game Consume");
+        gamesToUpdate.Clear();
         foreach (var game in allGames)
         {
             game.SalesCalculation(turn);

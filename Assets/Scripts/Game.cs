@@ -3,7 +3,7 @@ using Random = UnityEngine.Random;
 
 namespace Assets.Scripts
 {
-    public class Game
+    public class Game : ICloneable<Game>, IUpdatable<Game>
     {
         private string title;
         private string genre;
@@ -32,6 +32,19 @@ namespace Assets.Scripts
             this.theme = theme;
             this.graphics = graphics;
             this.gameQuality = gameQuality;
+        }
+        public Game(string title, string genre, string theme, string graphics, int gameQuality, List<Review> reviewList, int releasedTurn, List<Sales> salesList, int agents, int gameSalesThisWeek)
+        {
+            this.title = title;
+            this.genre = genre;
+            this.theme = theme;
+            this.graphics = graphics;
+            this.gameQuality = gameQuality;
+            this.reviewList = reviewList;
+            this.releasedTurn = releasedTurn;
+            this.salesList = salesList;
+            this.agents = agents;
+            this.gameSalesThisWeek = gameSalesThisWeek;
         }
         public string Title
         {
@@ -170,6 +183,24 @@ namespace Assets.Scripts
                 }
             }
             return incomeThisTurn;
+        }
+        public Game Clone()
+        {
+            Game clonedGame = new Game(Title, Genre, Theme, Graphics, GameQuality, ReviewList, ReleasedTurn, SalesList, Agents, GameSalesThisWeek);
+            return clonedGame;
+        }
+        public void UpdateFrom(Game source)
+        {
+            Title = source.Title;
+            Genre = source.Genre;
+            Theme = source.Theme;
+            Graphics = source.Graphics;
+            GameQuality = source.GameQuality;
+            ReviewList = source.ReviewList;
+            ReleasedTurn = source.ReleasedTurn;
+            SalesList = source.SalesList;
+            Agents = source.Agents;
+            GameSalesThisWeek = source.GameSalesThisWeek;
         }
     }
 }

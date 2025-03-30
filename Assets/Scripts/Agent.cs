@@ -3,11 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using TreeEditor;
 using Random = UnityEngine.Random;
 
 namespace Assets.Scripts
 {
-    public class Agent
+    public class Agent : ICloneable<Agent>, IUpdatable<Agent>
     {
         private List<AgentFavorite> favoriteGenres = new List<AgentFavorite>();
         private List<AgentFavorite> favoriteThemes = new List<AgentFavorite>();
@@ -27,6 +28,19 @@ namespace Assets.Scripts
             this.favoriteGraphics = favoriteGraphics;
             this.playingHoursPerWeek = playingHoursPerWeek;
             this.statisticMultiplier = statisticMultiplier;
+        }
+        public Agent(List<AgentFavorite> favoriteGenres, List<AgentFavorite> favoriteThemes, List<AgentFavorite> favoriteGraphics, int playingHoursPerWeek, int statisticMultiplier, Game currentPlayingGame, Game boughtGameThisWeek, List<Game> completedGames, List<Game> boughtGames, List<GameProgress> gameProgressList)
+        {
+            this.favoriteGenres = favoriteGenres;
+            this.favoriteThemes = favoriteThemes;
+            this.favoriteGraphics = favoriteGraphics;
+            this.playingHoursPerWeek = playingHoursPerWeek;
+            this.statisticMultiplier = statisticMultiplier;
+            this.currentPlayingGame = currentPlayingGame;
+            this.boughtGameThisWeek = boughtGameThisWeek;
+            this.completedGames = completedGames;
+            this.boughtGames = boughtGames;
+            this.gameProgressList = gameProgressList;
         }
         public List<AgentFavorite> FavoriteGenres
         {
@@ -72,6 +86,11 @@ namespace Assets.Scripts
         {
             get { return boughtGames; }
             set { boughtGames = value; }
+        }
+        public List<GameProgress> GameProgressList
+        {
+            get { return gameProgressList; }
+            set { gameProgressList = value; }
         }
         public Game CalculateCurrentPlayingGame(List<Game> listOfGames)
         {
@@ -132,6 +151,24 @@ namespace Assets.Scripts
                 if (score > maxScore) maxScore = score;
             }
             return maxScore;
+        }
+        public Agent Clone()
+        {
+            Agent clonedAgent = new Agent(FavoriteGenres, FavoriteThemes, FavoriteGraphics, PlayingHoursPerWeek, StatisticMultiplier, CurrentPlayingGame, BoughtGameThisWeek, CompletedGames, BoughtGames, GameProgressList);
+            return clonedAgent;
+        }
+        public void UpdateFrom(Agent source)
+        {
+            FavoriteGenres = source.FavoriteGenres;
+            FavoriteThemes = source.FavoriteThemes;
+            FavoriteGraphics = source.FavoriteGraphics;
+            PlayingHoursPerWeek = source.PlayingHoursPerWeek;
+            StatisticMultiplier = source.StatisticMultiplier;
+            CurrentPlayingGame = source.CurrentPlayingGame;
+            BoughtGameThisWeek = source.BoughtGameThisWeek;
+            CompletedGames = source.CompletedGames;
+            BoughtGames = source.BoughtGames;
+            GameProgressList = source.GameProgressList;
         }
     }
 }
