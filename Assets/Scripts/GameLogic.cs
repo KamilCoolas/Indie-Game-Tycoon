@@ -221,7 +221,15 @@ public class GameLogic : MonoBehaviour
         {
             await agentManager.AddOperationAsync(AgentPlayingAndBuyingGame, agent);
         }
-        await Task.WhenAll(agentManager.GetPendingTasks());
+    }
+    private void UpdateGamesToUpdateList(Game game, int agent, int bought)
+    {
+            gamesToUpdate.Add((game, agent, bought));
+    }
+    public async Task ConsumeNewTurnCalculation()
+    {
+        await agentManager.CommitChangesAsync();
+        Debug.Log("Agent Consume");
         var result = gamesToUpdate
             .GroupBy(item => item.game) // Grupujemy po stringu
             .Select(group => (
@@ -234,15 +242,6 @@ public class GameLogic : MonoBehaviour
         {
             await gameManager.AddOperationAsync(g => GamePlayingAndBuying(g, game.agents, game.bought), game.game);
         }
-    }
-    private void UpdateGamesToUpdateList(Game game, int agent, int bought)
-    {
-            gamesToUpdate.Add((game, agent, bought));
-    }
-    public async Task ConsumeNewTurnCalculation()
-    {
-        await agentManager.CommitChangesAsync();
-        Debug.Log("Agent Consume");
         await gameManager.CommitChangesAsync();
         Debug.Log("Game Consume");
         gamesToUpdate.Clear();

@@ -4,12 +4,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using TreeEditor;
-using Random = UnityEngine.Random;
 
 namespace Assets.Scripts
 {
     public class Agent : ICloneable<Agent>, IUpdatable<Agent>
     {
+        Random rnd = new Random();
         private List<AgentFavorite> favoriteGenres = new List<AgentFavorite>();
         private List<AgentFavorite> favoriteThemes = new List<AgentFavorite>();
         private List<AgentFavorite> favoriteGraphics = new List<AgentFavorite>();
@@ -111,7 +111,7 @@ namespace Assets.Scripts
                         gameToPlay = game;
                     }
                 }
-                if (gameToPlay == null) gameToPlay = boughtGames[Random.Range(0, boughtGames.Count)];
+                if (gameToPlay == null) gameToPlay = boughtGames[rnd.Next(0, boughtGames.Count)];
             }
             if (!boughtGames.Contains(gameToPlay))
             {
