@@ -1,4 +1,4 @@
-using System.Collections;
+ï»¿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -9,8 +9,7 @@ using Random = UnityEngine.Random;
 using UnityEditor;
 using System.Linq;
 using Unity.VisualScripting;
-using System.Threading;
-using System.Threading.Tasks;
+using Cysharp.Threading.Tasks;
 using TreeEditor;
 using System.ComponentModel;
 using static Unity.VisualScripting.Member;
@@ -66,6 +65,10 @@ public class GameLogic : MonoBehaviour
     public ConcurrentBag<(Game game, int agents, int bought)> gamesToUpdate = new ConcurrentBag<(Game, int, int)>();
     private AsyncOperationManager<Agent> agentManager = new AsyncOperationManager<Agent>();
     private AsyncOperationManager<Game> gameManager = new AsyncOperationManager<Game>();
+    private int agentAsyncProgress = 0;
+    private int gameAsyncProgress = 0;
+    public Slider ProgressBar;
+    public TMP_Text ProgressText;
     void Start()
     {
         employees[0, 0] = "You";
@@ -147,11 +150,11 @@ public class GameLogic : MonoBehaviour
         GameRel.GetComponent<GameReleased>().AssignReviewText(newGame);
         CreateNewGameButton.interactable = true;
     }
-    public void GenerateGames (int amount)
+    public void GenerateGames(int amount)
     {
-        for (int i = 0;  i < amount; i++)
+        for (int i = 0; i < amount; i++)
         {
-            Game game = new Game("Game " + (i+1).ToString(), gameAttributes[Random.Range(1, 4)], gameAttributes[Random.Range(4, 7)], gameAttributes[Random.Range(7, 10)], Random.Range(1, 11));
+            Game game = new Game("Game " + (i + 1).ToString(), gameAttributes[Random.Range(1, 4)], gameAttributes[Random.Range(4, 7)], gameAttributes[Random.Range(7, 10)], Random.Range(1, 11));
             game.ReleasedTurn = turn;
             game.ReviewGenerator();
             allGames.Add(game);
@@ -163,7 +166,7 @@ public class GameLogic : MonoBehaviour
     {
         for (int i = 0; i < amount; i++)
         {
-            List<AgentFavorite> genreList = new(AgentFavoritesGenerator(1,4, Random.Range(1, 4)));
+            List<AgentFavorite> genreList = new(AgentFavoritesGenerator(1, 4, Random.Range(1, 4)));
             List<AgentFavorite> themeList = new(AgentFavoritesGenerator(4, 7, Random.Range(1, 4)));
             List<AgentFavorite> graphicsList = new(AgentFavoritesGenerator(7, 10, Random.Range(1, 4)));
             Agent agent = new Agent(genreList, themeList, graphicsList, Random.Range(1, 24), Random.Range(1, 100));
@@ -172,7 +175,7 @@ public class GameLogic : MonoBehaviour
     }
     public List<AgentFavorite> AgentFavoritesGenerator(int minInc, int maxExc, int amount)
     {
-        List <AgentFavorite> agentFavorites = new List <AgentFavorite>();
+        List<AgentFavorite> agentFavorites = new List<AgentFavorite>();
         for (int i = 0; i < amount; i++)
         {
             AgentFavorite agentFavorite = new(gameAttributes[Random.Range(minInc, maxExc)], Random.Range(0.0f, 1.0f));
@@ -195,7 +198,7 @@ public class GameLogic : MonoBehaviour
     //        game.GameSalesThisWeek = 0;
     //    }
     //}
-    async Task<Agent> AgentPlayingAndBuyingGame(Agent agent)
+    async UniTask<Agent> AgentPlayingAndBuyingGame(Agent agent)
     {
         agent.PlayGame(allGames);
         UpdateGamesToUpdateList(agent.CurrentPlayingGame, agent.StatisticMultiplier, 0);
@@ -206,49 +209,76 @@ public class GameLogic : MonoBehaviour
             //Debug.Log("Agent Buying: " + agent.BoughtGameThisWeek.Title);
             agent.BoughtGameThisWeek = null;
         }
+        await UniTask.Yield();
         return agent;
     }
-    async Task<Game> GamePlayingAndBuying(Game game, int agents, int bought)
+    async UniTask<Game> GamePlayingAndBuying(Game game, int agents, int bought)
     {
         game.Agents = agents;
         game.GameSalesThisWeek = bought;
         Debug.Log("Game: " + game.Title + " Current Agents: " + game.Agents + " Current Sales: " + game.GameSalesThisWeek);
+        await UniTask.Yield();
         return game;
     }
-    public async Task StartNewTurnCalculation()
+    public async UniTask StartNewTurnCalculation()
     {
         foreach (var agent in allAgents)
         {
             await agentManager.AddOperationAsync(AgentPlayingAndBuyingGame, agent);
+            agentAsyncProgress++;
+            UpdateProgressBar();
+            Debug.Log(agentAsyncProgress);
         }
-    }
-    private void UpdateGamesToUpdateList(Game game, int agent, int bought)
-    {
-            gamesToUpdate.Add((game, agent, bought));
-    }
-    public async Task ConsumeNewTurnCalculation()
-    {
-        await agentManager.CommitChangesAsync();
-        Debug.Log("Agent Consume");
         var result = gamesToUpdate
             .GroupBy(item => item.game) // Grupujemy po stringu
             .Select(group => (
             game: group.Key,        // Klucz grupy (string)
-            agents: group.Sum(x => x.agents), // Suma pierwszej wartoœci int
-            bought: group.Sum(x => x.bought)  // Suma drugiej wartoœci int
+            agents: group.Sum(x => x.agents), // Suma pierwszej wartoï¿½ci int
+            bought: group.Sum(x => x.bought)  // Suma drugiej wartoï¿½ci int
             ))
             .ToList();
         foreach (var game in result)
         {
             await gameManager.AddOperationAsync(g => GamePlayingAndBuying(g, game.agents, game.bought), game.game);
+            gameAsyncProgress++;
+            UpdateProgressBar();
         }
+        gamesToUpdate.Clear();
+    }
+    private void UpdateGamesToUpdateList(Game game, int agent, int bought)
+    {
+        gamesToUpdate.Add((game, agent, bought));
+    }
+    public async UniTask ConsumeNewTurnCalculation()
+    {
+        bool isCompleted = IsNewTurnCalculationCompleted();
+        await agentManager.CommitChangesAsync();
+        Debug.Log("Agent Consume");
         await gameManager.CommitChangesAsync();
         Debug.Log("Game Consume");
-        gamesToUpdate.Clear();
         foreach (var game in allGames)
         {
             game.SalesCalculation(turn);
             game.GameSalesThisWeek = 0;
         }
+    }
+    public bool IsNewTurnCalculationCompleted()
+    {
+        if (agentAsyncProgress == allAgents.Count && gameAsyncProgress == gamesToUpdate.Count)
+        {
+            agentAsyncProgress = 0;
+            gameAsyncProgress = 0;
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+    public void UpdateProgressBar()
+    {
+        float progress = ((float)agentAsyncProgress + (float)gameAsyncProgress) / ((float)allAgents.Count + (float)gamesToUpdate.Count);
+        ProgressBar.value = progress;
+        ProgressText.text = "Progress: " + (progress * 100).ToString("F2") + "%";
     }
 }

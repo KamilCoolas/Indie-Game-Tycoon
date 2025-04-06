@@ -1,85 +1,46 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
-using TreeEditor;
-using Unity.VisualScripting;
+using Cysharp.Threading.Tasks;
 using UnityEngine;
 
 namespace Assets.Scripts
 {
     public class AsyncOperationManager<T> where T : class, ICloneable<T>, IUpdatable<T>
     {
-        private readonly List<(Func<T, Task<T>> Operation, T OriginalItem, Task CompletionTask)> _pendingOperations = new();
-        private readonly Dictionary<T, T> _stagedResults = new();
-        private readonly SemaphoreSlim _semaphore = new(1, 1);
-        public event EventHandler<double> ProgressChanged;
+        private readonly ConcurrentBag<(Func<T, UniTask<T>> Operation, T OriginalItem, UniTask CompletionTask)> _pendingOperations = new();
+        private readonly ConcurrentDictionary<T, T> _stagedResults = new();
 
-        public async Task AddOperationAsync(Func<T, Task<T>> operation, T item)
+        public async UniTask AddOperationAsync(Func<T, UniTask<T>> operation, T item)
         {
             var clonedItem = item.Clone();
-            var task = Task.Run(async () =>
+            var task = UniTask.RunOnThreadPool(async () =>
             {
                 try
                 {
                     var result = await operation(clonedItem);
-                    await _semaphore.WaitAsync();
-                    try
-                    {
-                        _stagedResults[item] = result;
-                    }
-                    finally
-                    {
-                        _semaphore.Release();
-                        OnProgressChanged();
-                    }
+                    _stagedResults[item] = result;
                 }
                 catch (Exception ex)
                 {
-                    Debug.Log($"Błąd w operacji: {ex.Message}");
+                    Debug.Log($"Error in operation: {ex.Message}");
                 }
             });
             _pendingOperations.Add((operation, item, task));
-            OnProgressChanged();
+            await UniTask.Yield();
         }
-        public async Task CommitChangesAsync()
+
+        public async UniTask CommitChangesAsync()
         {
             var tasks = _pendingOperations.Select(op => op.CompletionTask).ToArray();
-            await Task.WhenAll(tasks);
-
-            await _semaphore.WaitAsync();
-            try
+            await UniTask.WhenAll(tasks);
+            foreach (var (original, staged) in _stagedResults)
             {
-                foreach (var (original, staged) in _stagedResults)
-                {
-                    original.UpdateFrom(staged);
-                }
-                _stagedResults.Clear();
-                _pendingOperations.Clear();
+                original.UpdateFrom(staged);
             }
-            finally
-            {
-                _semaphore.Release();
-                OnProgressChanged();
-            }
+            _stagedResults.Clear();
+            _pendingOperations.Clear();
         }
-
-        public double GetProgress()
-        {
-            if (_pendingOperations.Count == 0) return 100.0;
-            int totalOperations = _pendingOperations.Count;
-            int completedOperations = _pendingOperations.Count(op => op.CompletionTask.IsCompleted);
-            return (double)completedOperations / totalOperations * 100.0;
-        }
-
-        private void OnProgressChanged()
-        {
-            ProgressChanged?.Invoke(this, GetProgress());
-        }
-        public Task[] GetPendingTasks() => _pendingOperations.Select(op => op.CompletionTask).ToArray();
-
-        public int PendingCount => _pendingOperations.Count;
     }
 }
