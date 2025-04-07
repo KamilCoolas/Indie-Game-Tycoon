@@ -1,13 +1,8 @@
-using Assets.Scripts;
+using Cysharp.Threading.Tasks;
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using TMPro;
-using Unity.VisualScripting.Antlr3.Runtime.Tree;
 using UnityEngine;
-using UnityEngine.Analytics;
 using UnityEngine.UI;
-using static UnityEngine.GraphicsBuffer;
 
 
 public class NextTurnButton : MonoBehaviour
@@ -19,6 +14,8 @@ public class NextTurnButton : MonoBehaviour
     public TMP_Text moneyText;
     public TMP_Text turnText;
     public GameObject GameLogicObject;
+    public Canvas ProgressBarCanvas;
+    private bool isProcessing = false;
     void Start()
     {
         GameLogic logic = GameLogicObject.GetComponent<GameLogic>();
@@ -27,28 +24,59 @@ public class NextTurnButton : MonoBehaviour
     }
     public void OnClick(GameLogic logic)
     {
-        GameLogic.turn++;
-        //logic.GenerateGames(10);
-        _ = logic.ConsumeNewTurnCalculation();
-        logic.UpdateMoney(-GameLogic.costPerTurn, "Maintenance");
-        logic.UpdateMoneyTurnText();
-        logic.GenerateIncome();
-        if (GameLogic.isGameInProgress)
+        if (isProcessing)
         {
-            GameLogic.gameInProgress[5] = (Convert.ToInt32(GameLogic.gameInProgress[5]) - 1).ToString();
-            for (int i = 1; i <= 3; i++)
-            {
-                ExpGain(GameLogic.atributeId[GameLogic.gameInProgress[i]]);
-            }
+            return;
         }
-        if (GameLogic.isGameInProgress && Convert.ToInt32(GameLogic.gameInProgress[5]) <= 0)
-        {
-            logic.GameReleased();
-        }
-        logic.IncomeCostTextGenerator();
-        _ = logic.StartNewTurnCalculation();
+
+        // Start the turn process as a fire-and-forget task
+        ProcessTurnAsync(logic).Forget();
     }
-    public void ExpGain (int atributeValue)
+    private async UniTaskVoid ProcessTurnAsync(GameLogic logic)
+    {
+        if (isProcessing) return;
+        isProcessing = true;
+        try
+        {
+            if (!logic.IsNewTurnCalculationCompleted())
+            {
+                ProgressBarCanvas.enabled = true;
+            }
+            await UniTask.WaitUntil(() => logic.IsNewTurnCalculationCompleted(),
+                                   PlayerLoopTiming.Update,
+                                   cancellationToken: this.GetCancellationTokenOnDestroy());
+            ProgressBarCanvas.enabled = false;
+            GameLogic.turn++;
+            await logic.ConsumeNewTurnCalculation();
+            logic.UpdateMoney(-GameLogic.costPerTurn, "Maintenance");
+            logic.UpdateMoneyTurnText();
+            logic.GenerateIncome();
+            if (GameLogic.isGameInProgress)
+            {
+                GameLogic.gameInProgress[5] = (Convert.ToInt32(GameLogic.gameInProgress[5]) - 1).ToString();
+                for (int i = 1; i <= 3; i++)
+                {
+                    ExpGain(GameLogic.atributeId[GameLogic.gameInProgress[i]]);
+                }
+            }
+            if (GameLogic.isGameInProgress && Convert.ToInt32(GameLogic.gameInProgress[5]) <= 0)
+            {
+                logic.GameReleased();
+            }
+            logic.IncomeCostTextGenerator();
+            logic.StartNewTurnCalculation().Forget();
+        }
+        catch (Exception ex)
+        {
+            Debug.LogError($"Turn processing failed: {ex.Message}");
+        }
+        finally
+        {
+            isProcessing = false;
+            ProgressBarCanvas.enabled = false; // Ensure hidden on error or completion
+        }
+    }
+    public void ExpGain(int atributeValue)
     {
         string[] aAttribute = GameLogic.employees[0, atributeValue].Split(".");
         int expGenre = (10 - Convert.ToInt32(aAttribute[0])) * 5;

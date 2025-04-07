@@ -1,9 +1,9 @@
+using Assets.Scripts;
+using System;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-using TMPro;
-using System;
-using Assets.Scripts;
 
 public class NewGameValuation : MonoBehaviour
 {
@@ -31,12 +31,12 @@ public class NewGameValuation : MonoBehaviour
         LoadingDropdownValues(FileParser, "genre", genreList, genreDropdown, genreId);
         LoadingDropdownValues(FileParser, "theme", themeList, themeDropdown, themeId);
         LoadingDropdownValues(FileParser, "graphic", graphicList, graphicDropdown, graphicId);
-        TitleInput.onValueChanged.AddListener(delegate { RecalculateValues(); }); 
+        TitleInput.onValueChanged.AddListener(delegate { RecalculateValues(); });
     }
     void Update()
     {
     }
-    
+
     void RecalculateValues()
     {
         if (genreValue != 0 && themeValue != 0 && graphicValue != 0 && TitleInput.text != "")

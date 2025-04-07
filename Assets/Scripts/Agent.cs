@@ -1,9 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using TreeEditor;
 
 namespace Assets.Scripts
 {
@@ -78,8 +74,8 @@ namespace Assets.Scripts
             set { boughtGameThisWeek = value; }
         }
         public List<Game> CompletedGames
-        { 
-            get { return completedGames; } 
+        {
+            get { return completedGames; }
             set { completedGames = value; }
         }
         public List<Game> BoughtGames
@@ -141,7 +137,7 @@ namespace Assets.Scripts
                 gameProgressList.Add(gameStarted);
             }
         }
-        public int CompareGameAttributeAndFavorites (List<AgentFavorite> favoriteList, string gameAttribute)
+        public int CompareGameAttributeAndFavorites(List<AgentFavorite> favoriteList, string gameAttribute)
         {
             int maxScore = 0;
             foreach (AgentFavorite favorite in favoriteList)

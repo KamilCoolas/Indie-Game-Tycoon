@@ -1,19 +1,14 @@
-﻿using System.Collections;
+﻿using Assets.Scripts;
+using Cysharp.Threading.Tasks;
+using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Linq;
+using TMPro;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.UI;
-using TMPro;
-using System;
-using Assets.Scripts;
 using Random = UnityEngine.Random;
-using UnityEditor;
-using System.Linq;
-using Unity.VisualScripting;
-using Cysharp.Threading.Tasks;
-using TreeEditor;
-using System.ComponentModel;
-using static Unity.VisualScripting.Member;
-using System.Collections.Concurrent;
 
 
 public class GameLogic : MonoBehaviour
@@ -65,10 +60,14 @@ public class GameLogic : MonoBehaviour
     public ConcurrentBag<(Game game, int agents, int bought)> gamesToUpdate = new ConcurrentBag<(Game, int, int)>();
     private AsyncOperationManager<Agent> agentManager = new AsyncOperationManager<Agent>();
     private AsyncOperationManager<Game> gameManager = new AsyncOperationManager<Game>();
-    private int agentAsyncProgress = 0;
-    private int gameAsyncProgress = 0;
+    private float agentAsyncProgress = 0f;
+    private float gameAsyncProgress = 0f;
     public Slider ProgressBar;
     public TMP_Text ProgressText;
+    private int batchSize = 100;
+    const int minBatchSize = 25; // Prevent negative or zero batchSize
+    const float targetFrameTimeMs = 15f; // Target 15 ms per batch (60 FPS = 16.67 ms)
+    private bool turnCalculationCompleted = false;
     void Start()
     {
         employees[0, 0] = "You";
@@ -84,7 +83,7 @@ public class GameLogic : MonoBehaviour
         EmpDrop.options.Add(new TMP_Dropdown.OptionData() { text = "1.You" });
         UpdateMoneyTurnText();
         GenerateGames(10);
-        GenerateAgents(10000);
+        GenerateAgents(100000);
         _ = StartNewTurnCalculation();
     }
     void Update()
@@ -198,37 +197,64 @@ public class GameLogic : MonoBehaviour
     //        game.GameSalesThisWeek = 0;
     //    }
     //}
-    async UniTask<Agent> AgentPlayingAndBuyingGame(Agent agent)
+    private UniTask<Agent> AgentPlayingAndBuyingGame(Agent agent)
     {
         agent.PlayGame(allGames);
         UpdateGamesToUpdateList(agent.CurrentPlayingGame, agent.StatisticMultiplier, 0);
-        //Debug.Log("Agent Playing: " + agent.CurrentPlayingGame.Title);
         if (agent.BoughtGameThisWeek != null)
         {
             UpdateGamesToUpdateList(agent.CurrentPlayingGame, 0, agent.StatisticMultiplier);
-            //Debug.Log("Agent Buying: " + agent.BoughtGameThisWeek.Title);
             agent.BoughtGameThisWeek = null;
         }
-        await UniTask.Yield();
-        return agent;
+        return UniTask.FromResult(agent);
     }
-    async UniTask<Game> GamePlayingAndBuying(Game game, int agents, int bought)
+    private UniTask<Game> GamePlayingAndBuying(Game game, int agents, int bought)
     {
         game.Agents = agents;
         game.GameSalesThisWeek = bought;
-        Debug.Log("Game: " + game.Title + " Current Agents: " + game.Agents + " Current Sales: " + game.GameSalesThisWeek);
-        await UniTask.Yield();
-        return game;
+        return UniTask.FromResult(game);
     }
     public async UniTask StartNewTurnCalculation()
     {
-        foreach (var agent in allAgents)
+        agentAsyncProgress = 0f;
+        gameAsyncProgress = 0f;
+        turnCalculationCompleted = false;
+        gamesToUpdate.Clear();
+        for (int i = 0; i < allAgents.Count; i += batchSize) // Fixed loop condition
         {
-            await agentManager.AddOperationAsync(AgentPlayingAndBuyingGame, agent);
-            agentAsyncProgress++;
+            int remainingAgents = allAgents.Count - i;
+            batchSize = Mathf.Clamp(batchSize, minBatchSize, remainingAgents); // Cap and floor batch size
+
+            var agentTasks = new List<UniTask>(batchSize);
+            float startTime = Time.realtimeSinceStartup;
+
+            // Process batch
+            for (int j = i; j < i + batchSize && j < allAgents.Count; j++)
+            {
+                agentTasks.Add(agentManager.AddOperationAsync(AgentPlayingAndBuyingGame, allAgents[j]));
+            }
+
+            await UniTask.WhenAll(agentTasks); // Wait for batch to complete
+            float batchTime = (Time.realtimeSinceStartup - startTime) * 1000f; // Convert to ms
+
+            // Update progress per batch, not per agent
+            agentAsyncProgress = i + batchSize; // Progress as total agents processed
             UpdateProgressBar();
-            Debug.Log(agentAsyncProgress);
+
+            // Dynamic batch size adjustment
+            if (batchTime < targetFrameTimeMs && batchSize < remainingAgents)
+            {
+                batchSize = Mathf.Min(batchSize + Mathf.Max(25, batchSize / 10), remainingAgents); // Adaptive increase
+            }
+            else if (batchTime > targetFrameTimeMs)
+            {
+                batchSize = Mathf.Max(minBatchSize, batchSize - Mathf.Max(25, batchSize / 10)); // Adaptive decrease
+            }
+
+            await UniTask.Yield(PlayerLoopTiming.Update); // Yield to keep game responsive
         }
+        agentAsyncProgress = (float)allAgents.Count;
+        UpdateProgressBar();
         var result = gamesToUpdate
             .GroupBy(item => item.game) // Grupujemy po stringu
             .Select(group => (
@@ -243,7 +269,7 @@ public class GameLogic : MonoBehaviour
             gameAsyncProgress++;
             UpdateProgressBar();
         }
-        gamesToUpdate.Clear();
+        turnCalculationCompleted = true;
     }
     private void UpdateGamesToUpdateList(Game game, int agent, int bought)
     {
@@ -251,34 +277,26 @@ public class GameLogic : MonoBehaviour
     }
     public async UniTask ConsumeNewTurnCalculation()
     {
-        bool isCompleted = IsNewTurnCalculationCompleted();
         await agentManager.CommitChangesAsync();
-        Debug.Log("Agent Consume");
         await gameManager.CommitChangesAsync();
-        Debug.Log("Game Consume");
         foreach (var game in allGames)
         {
             game.SalesCalculation(turn);
             game.GameSalesThisWeek = 0;
         }
+        await UniTask.Yield(PlayerLoopTiming.Update);
     }
     public bool IsNewTurnCalculationCompleted()
     {
-        if (agentAsyncProgress == allAgents.Count && gameAsyncProgress == gamesToUpdate.Count)
-        {
-            agentAsyncProgress = 0;
-            gameAsyncProgress = 0;
-            return true;
-        }
-        else
-        {
-            return false;
-        }
+        return turnCalculationCompleted;
     }
     public void UpdateProgressBar()
     {
-        float progress = ((float)agentAsyncProgress + (float)gameAsyncProgress) / ((float)allAgents.Count + (float)gamesToUpdate.Count);
-        ProgressBar.value = progress;
-        ProgressText.text = "Progress: " + (progress * 100).ToString("F2") + "%";
+        if (ProgressBar != null)
+        {
+            float progress = agentAsyncProgress / (float)allAgents.Count;
+            ProgressBar.value = progress;
+            ProgressText.text = ((int)(progress * 100)).ToString() + "%";
+        }
     }
 }

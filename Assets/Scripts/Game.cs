@@ -115,9 +115,9 @@ namespace Assets.Scripts
         //}
         public void SalesCalculation(int turn)
         {
-                int sales = gameSalesThisWeek;
-                Sales thisWeekSales = new(turn, sales, price);
-                SalesList.Add(thisWeekSales);
+            int sales = gameSalesThisWeek;
+            Sales thisWeekSales = new(turn, sales, price);
+            SalesList.Add(thisWeekSales);
         }
         public int GetOverallSales()
         {
@@ -164,10 +164,10 @@ namespace Assets.Scripts
             for (int i = 0; i < salesList.Count; i++)
             {
                 if (salesList[i].Turn == turn)
-                    {
+                {
                     salesThisTurn = salesList[i].SoldThisWeek;
                     break;
-                    }
+                }
             }
             return salesThisTurn;
         }
